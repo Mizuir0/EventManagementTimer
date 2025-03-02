@@ -145,3 +145,69 @@ function delayUpdate(timerId) {
 function padTime(time) {
     return (time < 10) ? `0${time}` : time;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('work-table');
+    const tbody = table.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr');
+    
+    let draggedRow = null;
+    
+    // 各行にイベントリスナーを追加
+    rows.forEach(row => {
+        // ドラッグ開始時
+        row.addEventListener('dragstart', function(e) {
+            draggedRow = this;
+            // ドラッグ中のスタイル適用
+            setTimeout(() => {
+                this.classList.add('dragging');
+            }, 0);
+        });
+        
+        // ドラッグ終了時
+        row.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            draggedRow = null;
+        });
+        
+        // ドラッグオーバー時（他の要素の上にドラッグ）
+        row.addEventListener('dragover', function(e) {
+            e.preventDefault(); // デフォルトの動作をキャンセル
+        });
+        
+        // ドロップ可能領域に入ったとき
+        row.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            if (draggedRow !== this) {
+                // ドラッグ中の行と現在の行の位置関係を調べる
+                const rect = this.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const height = rect.height;
+                
+                // カーソルが行の上半分にあるか下半分にあるかで挿入位置を決定
+                if (y < height / 2) {
+                    tbody.insertBefore(draggedRow, this);
+                } else {
+                    tbody.insertBefore(draggedRow, this.nextSibling);
+                }
+            }
+        });
+    });
+    
+    // 行の順序変更後にデータを保存したい場合の関数
+    function saveTableOrder() {
+        const rows = tbody.querySelectorAll('tr');
+        const order = Array.from(rows).map(row => {
+            return {
+                id: row.cells[1].textContent,
+                name: row.cells[2].textContent
+            };
+        });
+        
+        console.log('新しい順序:', order);
+        // ここでAjaxリクエストを送るなどしてサーバーに順序を保存できます
+    }
+    
+    // ドラッグ終了時にテーブルの順序を保存
+    tbody.addEventListener('dragend', saveTableOrder);
+});
