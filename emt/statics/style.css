@@ -1,0 +1,53 @@
+.add {
+  margin-left: 70%;
+  margin-right: 0%;
+}
+
+.timer {
+  font-size: 10em;
+}
+
+.btn-primary {
+  --bs-btn-font-size: 2rem;
+  --bs-btn-padding-y: .25rem;
+  --bs-btn-padding-x: 2.5rem;
+}
+
+.btn-danger {
+  --bs-btn-font-size: 2rem;
+  --bs-btn-padding-y: .25rem;
+  --bs-btn-padding-x: 1.5rem;
+}
+
+.mt-n3 {
+  margin-top: 1rem;
+}
+
+.mt-n5 {
+  margin-top: -3rem;
+}
+
+.mb-n3 {
+  margin-bottom: -2rem;
+}
+
+.title {
+  font-size: 2em;
+}
+
+.editable--form {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.editable--form--btn {
+  padding: 2rem;
+}
+
+form p {
+  text-align: center;
+  margin-bottom: 20px;
+}
