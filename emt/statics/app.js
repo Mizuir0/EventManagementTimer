@@ -5,6 +5,7 @@ let delayTimer;
 
 function startTimer(timerId) {
     const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
+    const rows = document.querySelectorAll('.-row');
 
     timers[timerId] = {
         timer: setInterval(() => updateTimer(timerId), 1000),
@@ -20,6 +21,10 @@ function startTimer(timerId) {
     document.getElementById('defaultTimer').classList.add('d-none');
     document.getElementById(`current${timerId}`).classList.remove('d-none');
     document.getElementById(`row${timerId}`).classList.add('table-danger');
+
+    rows.forEach((row) => {
+        row.removeAttribute('draggable');
+    });
 
     if (document.getElementById(`next${parseInt(timerId)+1}`)) {
         document.getElementById(`next${parseInt(timerId)+1}`).classList.remove('d-none');

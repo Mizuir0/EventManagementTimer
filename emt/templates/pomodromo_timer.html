@@ -194,7 +194,7 @@
                             <tbody>
                             {% if not timers is None %}
                             {% for timer in timers %}
-                                <tr id="row{{ timer.id }}" draggable="true">
+                                <tr id="row{{ timer.id }}" draggable="true" class="-row">
                                     <th scope="row">
                                         <a href="{% url 'edit' timer.id %}">{{ timer.band_name }}</a>
                                     </th>
