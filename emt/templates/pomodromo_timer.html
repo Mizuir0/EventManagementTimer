@@ -30,10 +30,6 @@
                           <img width="30" src="https://img.icons8.com/ios/50/add--v1.png" 
                                alt="add--v1"/>
                         </a>
-                        <a class="nav-link mx-3" href="/delete">
-                            <img width="30" src="https://img.icons8.com/ios/50/waste.png" 
-                                 alt="waste"/>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -101,6 +97,9 @@
                                             <button class=" btn btn-primary" type="submit">Save</button>
                                             <a href='/'>
                                                 <p class="mt-3">Cancel</p>
+                                            </a>
+                                            <a href="{% url 'delete' timer.id %}">
+                                                <p>Delete</p>
                                             </a>
                                         </div>
                                     </div>

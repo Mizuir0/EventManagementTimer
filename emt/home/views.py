@@ -59,16 +59,25 @@ def edit(request, timer_id):
         return render(request, 'pomodromo_timer.html', {
             'form': form,
             "editable": editable,
-            'timers': timers
+            'timers': timers,
+            'timer': timer
         })
 
-def delete(request):
-    timers = Timers.objects.all()
-    timers.delete()
+def delete(request, timer_id):
+    timer = Timers.objects.get(id=timer_id)
+    timer.delete()
     print("Successfully Deleted")
-    form = PomodoroForm()
-    return render(request, 'pomodromo_timer.html', {
-        'form': form,
-        "editable": False,
-        'timers': None
-    })
+    return redirect("pomodoro_timer")
+    # timers = Timers.objects.all()
+    # form = PomodoroForm()
+    # if len(timers) == 0:
+    #     return render(request, 'pomodromo_timer.html', {
+    #         'form': form,
+    #         "editable": False,
+    #         'timers': None
+    #     })
+    # return render(request, 'pomodromo_timer.html', {
+    #     'form': form,
+    #     "editable": False,
+    #     'timers': timers
+    # })
