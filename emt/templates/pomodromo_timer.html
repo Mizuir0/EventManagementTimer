@@ -94,12 +94,12 @@
                                     <div class="h5 col-lg-12  mt-5 editable--form">
                                         {{ form.as_p }}
                                         <div class="editable--form--btn text-center">
-                                            <button class=" btn btn-primary" type="submit">Save</button>
-                                            <a href='/'>
-                                                <p class="mt-3">Cancel</p>
+                                            <a href="{% url 'delete' timer.id %}" class="btn btn-danger edit-btn">
+                                                Delete
                                             </a>
-                                            <a href="{% url 'delete' timer.id %}">
-                                                <p>Delete</p>
+                                            <button class=" btn btn-primary edit-btn" type="submit">Save</button>
+                                            <a href='/'>
+                                                <p class="mt-1">Cancel</p>
                                             </a>
                                         </div>
                                     </div>

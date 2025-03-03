@@ -7,16 +7,17 @@
   font-size: 10em;
 }
 
-.btn-primary {
+.btn {
   --bs-btn-font-size: 2rem;
   --bs-btn-padding-y: .25rem;
   --bs-btn-padding-x: 2.5rem;
 }
 
-.btn-danger {
-  --bs-btn-font-size: 2rem;
+.edit-btn {
+  margin: 1rem;
+  width: 120px;
   --bs-btn-padding-y: .25rem;
-  --bs-btn-padding-x: 1.5rem;
+  --bs-btn-padding-x: 0rem;
 }
 
 .mt-n3 {
@@ -44,10 +45,15 @@
 }
 
 .editable--form--btn {
-  padding: 2rem;
+  padding-top: 1.5rem;
 }
 
 form p {
   text-align: center;
   margin-bottom: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
 }
