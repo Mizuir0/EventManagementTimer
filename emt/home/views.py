@@ -25,7 +25,7 @@ def pomodoro_timer(request):
   })
 
 def add(request):
-    editable = True
+    editable = "add"
     if request.method == "POST":
         editable = False
         form = PomodoroForm(request.POST)
@@ -42,7 +42,25 @@ def add(request):
             "editable": editable,
             'timers': timers
         })
-
+    
+def edit(request, timer_id):
+    editable = "edit"
+    timer = Timers.objects.get(id=timer_id)
+    
+    if request.method == "POST":
+        editable = False
+        form = PomodoroForm(request.POST, instance=timer)
+        if form.is_valid():
+            form.save()
+            return redirect("pomodoro_timer")
+    else:
+        form = PomodoroForm(instance=timer)
+        timers = Timers.objects.all()
+        return render(request, 'pomodromo_timer.html', {
+            'form': form,
+            "editable": editable,
+            'timers': timers
+        })
 
 def delete(request):
     timers = Timers.objects.all()

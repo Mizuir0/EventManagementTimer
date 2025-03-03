@@ -79,8 +79,21 @@
                         <div class="container">
                             
                             <div class="d-flex flex-column">
-                                {% if editable %}
-                                <form id="pomodoroForm" method="POST" action="{% url 'add' %}">
+                                {% if editable == "add" %}
+                                <form id="pomodoroForm" method="POST" action="">
+                                    {% csrf_token %}
+                                    <div class="h5 col-lg-12  mt-5 editable--form">
+                                        {{ form.as_p }}
+                                        <div class="editable--form--btn text-center">
+                                            <button class=" btn btn-primary" type="submit">Save</button>
+                                            <a href='/'>
+                                                <p class="mt-3">Cancel</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                                {% elif editable == "edit" %}
+                                <form id="pomodoroFormEdit" method="POST" action="">
                                     {% csrf_token %}
                                     <div class="h5 col-lg-12  mt-5 editable--form">
                                         {{ form.as_p }}
@@ -183,7 +196,9 @@
                             {% if not timers is None %}
                             {% for timer in timers %}
                                 <tr id="row{{ timer.id }}" draggable="true">
-                                    <th scope="row">{{ timer.band_name }}</th>
+                                    <th scope="row">
+                                        <a href="{% url 'edit' timer.id %}">{{ timer.band_name }}</a>
+                                    </th>
                                     <td>{{ timer.item1 }}</td>
                                     <td>{{ timer.item2 }}</td>
                                     <td>{{ timer.item3 }}</td>
