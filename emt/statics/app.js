@@ -168,6 +168,60 @@ document.addEventListener('DOMContentLoaded', function() {
     const tbody = table.querySelector('tbody');
     const rows = tbody.querySelectorAll('tr');
     
+    // スペースキーでタイマーを開始する機能を追加
+    document.addEventListener('keydown', function(event) {
+        // スペースキーが押されたとき
+        if (event.code === 'Space' || event.keyCode === 32) {
+            // フォーム入力中やテキストエリアにフォーカスがある場合は何もしない
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            event.preventDefault(); // ページのスクロールなど、デフォルトの動作を防止
+            
+            // 現在表示されているデフォルトタイマーを確認
+            const defaultTimer = document.getElementById('defaultTimer');
+            if (!defaultTimer.classList.contains('d-none')) {
+                // デフォルトタイマーが表示されている場合、最初のタイマーを探して開始
+                const firstTimerId = document.querySelector('.timerId')?.value;
+                if (firstTimerId) {
+                    startTimer(firstTimerId);
+                }
+            } else {
+                // 現在実行中のタイマーがある場合
+                // 実行中のタイマーを探す
+                const activeRow = document.querySelector('.table-danger');
+                if (activeRow) {
+                    const timerId = activeRow.id.replace('row', '');
+                    const timer = timers[timerId];
+                    
+                    // タイマーが実行中なら一時停止、一時停止中なら再開
+                    if (timer) {
+                        if (timer.isTimerRunning) {
+                            pauseTimer(timerId);
+                        } else {
+                            resumeTimer(timerId);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (event.code === '→' || event.keyCode === 39) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (defaultTimer.classList.contains('d-none')) {
+                const activeRow = document.querySelector('.table-danger');
+                const timerId = activeRow.id.replace('row', '');
+                skipTimer(timerId);
+            }
+        }
+    });
+    
     let draggedRow = null;
     
     // 各行にイベントリスナーを追加
