@@ -2,9 +2,12 @@ from django.shortcuts import render, redirect
 from .models import Timers
 from .forms import PomodoroForm
 from django.db.models import Sum, F, ExpressionWrapper, fields
+from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db import connection, transaction
 
 # views.py
-
 def pomodoro_timer(request):
   first_timer = Timers.objects.first()
   timers = Timers.objects.all()
@@ -97,16 +100,53 @@ def delete(request, timer_id):
     
     print("Successfully Deleted")
     return redirect("pomodoro_timer")
-    # timers = Timers.objects.all()
-    # form = PomodoroForm()
-    # if len(timers) == 0:
-    #     return render(request, 'pomodromo_timer.html', {
-    #         'form': form,
-    #         "editable": False,
-    #         'timers': None
-    #     })
-    # return render(request, 'pomodromo_timer.html', {
-    #     'form': form,
-    #     "editable": False,
-    #     'timers': timers
-    # })
+
+@ensure_csrf_cookie
+def reorder(request):
+    if request.method == 'POST':
+        try:
+            # Parse the JSON data sent by the client
+            data = json.loads(request.body)
+            timer_order = data.get('timer_order', [])
+            
+            if not timer_order:
+                return JsonResponse({'success': False, 'error': 'No timer order provided'})
+            
+            with transaction.atomic():
+                # Similar approach to the delete method
+                # Get all timers and store their data temporarily
+                timers_data = []
+                for timer_id in timer_order:
+                    try:
+                        timer = Timers.objects.get(id=timer_id)
+                        timers_data.append({
+                            'band_name': timer.band_name,
+                            'minutes': timer.minutes,
+                            'item1': timer.item1,
+                            'item2': timer.item2,
+                            'item3': timer.item3,
+                            'uuid': timer.uuid
+                        })
+                    except Timers.DoesNotExist:
+                        return JsonResponse({'success': False, 'error': f'Timer with ID {timer_id} not found'})
+                
+                # Delete all timers
+                Timers.objects.all().delete()
+                
+                # Reset auto increment
+                with connection.cursor() as cursor:
+                    cursor.execute("ALTER TABLE home_timers AUTO_INCREMENT = 1")
+                
+                # Create new timers in the specified order
+                for data in timers_data:
+                    new_timer = Timers(**data)
+                    new_timer.save()
+                
+                return JsonResponse({'success': True})
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

@@ -146,6 +146,23 @@ function padTime(time) {
     return (time < 10) ? `0${time}` : time;
 }
 
+// Get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const table = document.getElementById('work-table');
     const tbody = table.querySelector('tbody');
@@ -168,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
         row.addEventListener('dragend', function() {
             this.classList.remove('dragging');
             draggedRow = null;
+            
+            // テーブルの順序が変更されたらサーバーに通知
+            saveTableOrder();
         });
         
         // ドラッグオーバー時（他の要素の上にドラッグ）
@@ -194,20 +214,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 行の順序変更後にデータを保存したい場合の関数
+    // 行の順序変更後にデータを保存する関数
     function saveTableOrder() {
         const rows = tbody.querySelectorAll('tr');
-        const order = Array.from(rows).map(row => {
-            return {
-                id: row.cells[1].textContent,
-                name: row.cells[2].textContent
-            };
+        const timerOrder = Array.from(rows).map(row => {
+            // Extract the timer ID from the row id (row{id})
+            const rowId = row.id;
+            const timerId = rowId.replace('row', '');
+            return parseInt(timerId);
         });
         
-        console.log('新しい順序:', order);
-        // ここでAjaxリクエストを送るなどしてサーバーに順序を保存できます
+        // If no changes or only one row, don't send update
+        if (timerOrder.length <= 1) {
+            return;
+        }
+        
+        // Get the CSRF token for Django
+        const csrftoken = getCookie('csrftoken');
+        
+        // Send the new order to the server
+        fetch('/reorder/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                timer_order: timerOrder
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                console.log('Reordered timers successfully');
+                // Optional: Reload the page to show the updated order
+                window.location.reload();
+            } else {
+                console.error('Error reordering timers:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error reordering timers:', error);
+        });
     }
-    
-    // ドラッグ終了時にテーブルの順序を保存
-    tbody.addEventListener('dragend', saveTableOrder);
 });
