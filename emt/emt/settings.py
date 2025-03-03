@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wdxfhsz@kdcw2v_#55)ubdd0!aq8v*o#*21tk9ezr=ley$q7n5'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-wdxfhsz@kdcw2v_#55)ubdd0!aq8v*o#*21tk9ezr=ley$q7n5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -74,16 +75,17 @@ WSGI_APPLICATION = 'emt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_blog_db',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '3306'
+if os.environ.get('USE_CLOUD_SQL', 'False') == 'True':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'django_blog_db'),
+            'USER': os.environ.get('DB_USER', 'user'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
+            'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+            'PORT': os.environ.get('DB_PORT', '3306'),
+        }
     }
-}
 
 
 # Password validation
@@ -127,3 +129,9 @@ STATICFILES_DIRS = [BASE_DIR / 'statics']
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if not DEBUG:
+    # Cloud Storage設定
+    STATIC_URL = 'https://storage.googleapis.com/[YOUR_BUCKET_NAME]/'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_BUCKET_NAME = '[YOUR_BUCKET_NAME]'
