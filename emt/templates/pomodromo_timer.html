@@ -9,7 +9,7 @@
               rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
               crossorigin="anonymous">
-      <link rel='stylesheet' href="{% static 'style.css'%}">
+      <link rel="stylesheet" href="{% static 'style.css'%}">
       <script src="{% static 'app.js' %}"></script>
 
     </head>
@@ -82,7 +82,7 @@
                                         {{ form.as_p }}
                                         <div class="editable--form--btn text-center">
                                             <button class=" btn btn-primary" type="submit">Save</button>
-                                            <a href='/'>
+                                            <a href="/">
                                                 <p class="mt-3">Cancel</p>
                                             </a>
                                         </div>
@@ -98,7 +98,7 @@
                                                 Delete
                                             </a>
                                             <button class=" btn btn-primary edit-btn" type="submit">Save</button>
-                                            <a href='/'>
+                                            <a href="/">
                                                 <p class="mt-1">Cancel</p>
                                             </a>
                                         </div>
@@ -117,10 +117,10 @@
                                             >:<span id="seconds{{ timer.id }}">00</span>
                                         </div>
                                         <div id="delayTimer{{ timer.id }}" class="d-none mt-n5">
-                                            <p class="h1 col text-center">
+                                            <p class="h1 col text-center mt-3">
                                                 ( <span id="delay-minutes{{ timer.id }}">00</span
                                                 >:<span id="delay-seconds{{ timer.id }}">00</span
-                                                > <span id="delay{{ timer.id }}"></span>)
+                                                > <span id="delay{{ timer.id }}"></span> )
                                             </p>
                                         </div>
                                         <p class="h2 text-center mt-4 fw-bold">
