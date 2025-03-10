@@ -76,10 +76,13 @@ def delete(request, timer_id):
         t.uuid = i
         t.save(update_fields=['uuid'])
     
-    # Auto Increment キーをリセット (MySQL/MariaDBの場合)
-    from django.db import connection
+    # SQLiteではAUTO_INCREMENTをリセットする直接的な方法はないため、
+    # sqlite_sequence テーブルを直接操作する
     with connection.cursor() as cursor:
-        cursor.execute("ALTER TABLE home_timers AUTO_INCREMENT = 1")
+        # sqlite_sequenceテーブルが存在するか確認（初めての場合は存在しない可能性がある）
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='sqlite_sequence'")
+        if cursor.fetchone():
+            cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'home_timers'")
     
     # 新しいIDでタイマーを作り直す
     for t in timers:
@@ -133,9 +136,12 @@ def reorder(request):
                 # Delete all timers
                 Timers.objects.all().delete()
                 
-                # Reset auto increment
+                # Reset auto increment for SQLite
                 with connection.cursor() as cursor:
-                    cursor.execute("ALTER TABLE home_timers AUTO_INCREMENT = 1")
+                    # sqlite_sequenceテーブルが存在するか確認
+                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='sqlite_sequence'")
+                    if cursor.fetchone():
+                        cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'home_timers'")
                 
                 # Create new timers in the specified order
                 for data in timers_data:
