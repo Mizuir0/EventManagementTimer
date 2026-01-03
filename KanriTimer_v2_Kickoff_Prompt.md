@@ -171,7 +171,6 @@ KanriTimer/
 ## 📚 参考資料
 
 - 要件定義書: `KanriTimer_v2_Requirements.md`
-- 現行システム: `/home/user/EventManagementTimer/`
 
 ---
 
